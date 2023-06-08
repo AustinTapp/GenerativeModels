@@ -240,6 +240,20 @@ class TestDiffusionModelUNet2D(unittest.TestCase):
             result = net.forward(torch.rand((1, 1, 16, 16)), torch.randint(0, 1000, (1,)).long())
             self.assertEqual(result.shape, (1, 1, 16, 16))
 
+    def test_timestep_with_wrong_shape(self):
+        net = DiffusionModelUNet(
+            spatial_dims=2,
+            in_channels=1,
+            out_channels=1,
+            num_res_blocks=1,
+            num_channels=(8, 8, 8),
+            attention_levels=(False, False, False),
+            norm_num_groups=8,
+        )
+        with self.assertRaises(ValueError):
+            with eval_mode(net):
+                net.forward(torch.rand((1, 1, 16, 16)), torch.randint(0, 1000, (1, 1)).long())
+
     def test_shape_with_different_in_channel_out_channel(self):
         in_channels = 6
         out_channels = 3
@@ -331,18 +345,19 @@ class TestDiffusionModelUNet2D(unittest.TestCase):
             )
 
     def test_context_with_conditioning_none(self):
+        net = DiffusionModelUNet(
+            spatial_dims=2,
+            in_channels=1,
+            out_channels=1,
+            num_res_blocks=1,
+            num_channels=(8, 8, 8),
+            attention_levels=(False, False, True),
+            with_conditioning=False,
+            transformer_num_layers=1,
+            norm_num_groups=8,
+        )
+
         with self.assertRaises(ValueError):
-            net = DiffusionModelUNet(
-                spatial_dims=2,
-                in_channels=1,
-                out_channels=1,
-                num_res_blocks=1,
-                num_channels=(8, 8, 8),
-                attention_levels=(False, False, True),
-                with_conditioning=False,
-                transformer_num_layers=1,
-                norm_num_groups=8,
-            )
             with eval_mode(net):
                 net.forward(
                     x=torch.rand((1, 1, 16, 32)),
@@ -371,18 +386,19 @@ class TestDiffusionModelUNet2D(unittest.TestCase):
             self.assertEqual(result.shape, (1, 1, 16, 32))
 
     def test_conditioned_models_no_class_labels(self):
+        net = DiffusionModelUNet(
+            spatial_dims=2,
+            in_channels=1,
+            out_channels=1,
+            num_res_blocks=1,
+            num_channels=(8, 8, 8),
+            attention_levels=(False, False, True),
+            norm_num_groups=8,
+            num_head_channels=8,
+            num_class_embeds=2,
+        )
+
         with self.assertRaises(ValueError):
-            net = DiffusionModelUNet(
-                spatial_dims=2,
-                in_channels=1,
-                out_channels=1,
-                num_res_blocks=1,
-                num_channels=(8, 8, 8),
-                attention_levels=(False, False, True),
-                norm_num_groups=8,
-                num_head_channels=8,
-                num_class_embeds=2,
-            )
             net.forward(x=torch.rand((1, 1, 16, 32)), timesteps=torch.randint(0, 1000, (1,)).long())
 
     def test_model_num_channels_not_same_size_of_attention_levels(self):
