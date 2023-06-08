@@ -75,9 +75,9 @@ print_config()
 
 # ## Setup data directory
 
-directory = os.environ.get("MONAI_DATA_DIRECTORY")
-root_dir = tempfile.mkdtemp() if directory is None else directory
-
+#directory = os.environ.get("MONAI_DATA_DIRECTORY")
+root_dir = "C:\\Users\\Austin Tapp\\Documents\\GenerativeModels\\data\\BRATS"
+print(root_dir)
 
 #
 # ## Set deterministic training for reproducibility
@@ -126,7 +126,7 @@ train_ds = DecathlonDataset(
     section="training",  # validation
     cache_rate=1.0,  # you may need a few Gb of RAM... Set to 0 otherwise
     num_workers=4,
-    download=False,  # Set download to True if the dataset hasnt been downloaded yet
+    download=True,  # Set download to True if the dataset hasnt been downloaded yet
     seed=0,
     transform=train_transforms,
 )
@@ -137,7 +137,7 @@ print(f'Train label shape {train_ds[0]["label"].shape}')
 
 
 train_loader = DataLoader(
-    train_ds, batch_size=batch_size, shuffle=True, num_workers=4, drop_last=True, persistent_workers=True
+    train_ds, batch_size=batch_size, shuffle=True, num_workers=12, drop_last=True, persistent_workers=True
 )
 # -
 
@@ -160,7 +160,7 @@ print(f'Validation Image shape {val_ds[0]["image"].shape}')
 print(f'Validation Label shape {val_ds[0]["label"].shape}')
 
 val_loader = DataLoader(
-    val_ds, batch_size=batch_size, shuffle=False, num_workers=4, drop_last=True, persistent_workers=True
+    val_ds, batch_size=batch_size, shuffle=False, num_workers=12, drop_last=True, persistent_workers=True
 )
 # -
 
