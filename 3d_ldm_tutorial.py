@@ -98,7 +98,7 @@ train_ds = DecathlonDataset(
     section="training",  # validation
     cache_rate=1.0,  # you may need a few Gb of RAM... Set to 0 otherwise
     num_workers=8,
-    download=False,  # Set download to True if the dataset hasnt been downloaded yet
+    download=True,  # Set download to True if the dataset hasnt been downloaded yet
     seed=0,
     transform=train_transforms,
 )
